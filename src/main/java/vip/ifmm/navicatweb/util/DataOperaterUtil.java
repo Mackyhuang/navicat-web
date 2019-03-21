@@ -13,32 +13,41 @@ import java.util.*;
  * @eamil: 973151766@qq.com
  * @createTime: 2019/3/21 13:26
  */
-public class DataOperater {
+public class DataOperaterUtil {
 
-    Logger logger = LoggerFactory.getLogger(DataOperater.class);
+    Logger logger = LoggerFactory.getLogger(DataOperaterUtil.class);
 
     Connection connection = null;
 
-    public DataOperater(String url, String username, String password) throws SQLException {
+    public DataOperaterUtil(String url, String username, String password) throws SQLException {
         connection = DataSourceUtil.getConnection(url, username, password);
     }
 
-    public List<Map<String, String>> list(String databaseName, String tableName) throws SQLException {
-        List<Map<String, String>> queryList = new ArrayList<>();
+    /**
+     * 获取表中的数据
+     * @param databaseName
+     * @param tableName
+     * @return 可以返回list list 也可以返回 list map类型的
+     * @throws SQLException
+     */
+    public List<List<String>> list(String databaseName, String tableName) throws SQLException {
+//        List<Map<String, String>> queryList = new ArrayList<>();
+        List<List<String>> queryList = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM ");
         sql.append(StringUtils.trimAllWhitespace(tableName));
         PreparedStatement preparedStatement = connection.prepareStatement(String.valueOf(sql));
         ResultSet resultSet = preparedStatement.executeQuery();
         List<String> columnNames = getColumnNameByTableName(databaseName, tableName);
         while (resultSet.next()) {
-            Map<String, String> resultMap = new HashMap<>();
+//            Map<String, String> resultMap = new HashMap<>();
+            List<String> resultList = new LinkedList<>();
             Iterator<String> iterator = columnNames.iterator();
             while (iterator.hasNext()) {
                 String next = iterator.next();
                 String record = String.valueOf(resultSet.getObject(next));
-                resultMap.put(next, record);
+                resultList.add(record);
             }
-            queryList.add(resultMap);
+            queryList.add(resultList);
         }
         return queryList;
     }
@@ -65,7 +74,7 @@ public class DataOperater {
      * @param databaseName
      * @throws SQLException
      */
-    public void queryTables(String databaseName) throws SQLException {
+    public List<String> queryTables(String databaseName) throws SQLException {
         List<String> tableList = new ArrayList<>();
         DatabaseMetaData metaData = connection.getMetaData();
         ResultSet tables = metaData.getTables(databaseName, null, null,
@@ -75,10 +84,11 @@ public class DataOperater {
             tableList.add(tableName);
             logger.info(tableName);
         }
+        return tableList;
     }
 
     /**
-     * 根据表名获取这个表的结构
+     * 根据表名获取这个表的结构 用于 设计表 专用
      * @param databaseName 需要制定数据库名字，不然会导致同表不同库导致的错误数据出现再结果集
      * @param tableName
      * @return

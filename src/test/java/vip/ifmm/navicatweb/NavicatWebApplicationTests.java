@@ -4,9 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import vip.ifmm.navicatweb.entity.TableStructure;
-import vip.ifmm.navicatweb.util.DataOperater;
-import vip.ifmm.navicatweb.util.DataSourceUtil;
+import vip.ifmm.navicatweb.util.DataOperaterUtil;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -22,16 +20,16 @@ public class NavicatWebApplicationTests {
         String url = "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC";
         String username = "root";
         String password = "8023";
-        DataOperater dataOperater = new DataOperater(url, username, password);
-//        dataOperater.queryTables("test");
-//        List<TableStructure> structureList = dataOperater.queryStructure("test", "province");
+        DataOperaterUtil dataOperaterUtil = new DataOperaterUtil(url, username, password);
+//        dataOperaterUtil.queryTables("test");
+//        List<TableStructure> structureList = dataOperaterUtil.queryStructure("test", "province");
 //        Iterator<TableStructure> iterator = structureList.iterator();
-//        List<String> columnNameByTableName = dataOperater.getColumnNameByTableName("test", "province");
-        List<Map<String, String>> list = dataOperater.list("test", "province");
-        Iterator<Map<String, String>> iterator = list.iterator();
-        while (iterator.hasNext()){
-            System.out.println(iterator.next());
-        }
+//        List<String> columnNameByTableName = dataOperaterUtil.getColumnNameByTableName("test", "province");
+//        List<Map<String, String>> list = dataOperaterUtil.list("test", "province");
+//        Iterator<Map<String, String>> iterator = list.iterator();
+//        while (iterator.hasNext()){
+//            System.out.println(iterator.next());
+//        }
     }
 
 }

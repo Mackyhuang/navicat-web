@@ -13,6 +13,8 @@ public class IndexController {
 
     @GetMapping(value = {"/index", "/"})
     public String index(){
-        return "shared_file";
+        return "connect";
     }
+
+
 }
