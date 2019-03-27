@@ -118,11 +118,14 @@
                             </tr>
                         </c:if>
                         <c:if test="${!empty detailTableInfo}">
-                            <c:forEach var="info" items="${detailTableInfo}">
+                            <c:forEach var="info" items="${detailTableInfo}" varStatus="loop">
                                 <tr>
                                     <c:forEach var="line" items="${info}">
                                         <td>${line}</td>
                                     </c:forEach>
+                                    <td>
+                                        <a href="#" class="delete_btn" data-index-tag="${primaryKeys[loop.count-1]}">删除</a>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </c:if>
@@ -162,6 +165,31 @@
         ga('create', 'UA-72504830-1', 'auto');
         ga('send', 'pageview');
     }
+</script>
+<script>
+    $(".delete_btn").each(function (index, item) {
+        item = $(item);
+        item.click(function () {
+            $.ajax({
+                url: "remove",
+                dataType: "json",
+                data:{
+                    "index": item.attr("data-index-tag")
+                },
+                success:function (data) {
+                    if (data == 1){
+                        alert("删除成功！");
+                        window.location.reload();
+                    } else {
+                        alert("删除失败！");
+                    }
+                },
+                error:function (data) {
+                    alert(data);
+                }
+            })
+        })
+    })
 </script>
 </body>
 </html>

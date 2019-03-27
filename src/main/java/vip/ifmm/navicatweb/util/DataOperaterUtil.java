@@ -24,35 +24,6 @@ public class DataOperaterUtil {
     }
 
     /**
-     * 获取表中的数据
-     * @param databaseName
-     * @param tableName
-     * @return 可以返回list list 也可以返回 list map类型的
-     * @throws SQLException
-     */
-    public List<List<String>> list(String databaseName, String tableName) throws SQLException {
-//        List<Map<String, String>> queryList = new ArrayList<>();
-        List<List<String>> queryList = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM ");
-        sql.append(StringUtils.trimAllWhitespace(tableName));
-        PreparedStatement preparedStatement = connection.prepareStatement(String.valueOf(sql));
-        ResultSet resultSet = preparedStatement.executeQuery();
-        List<String> columnNames = getColumnNameByTableName(databaseName, tableName);
-        while (resultSet.next()) {
-//            Map<String, String> resultMap = new HashMap<>();
-            List<String> resultList = new LinkedList<>();
-            Iterator<String> iterator = columnNames.iterator();
-            while (iterator.hasNext()) {
-                String next = iterator.next();
-                String record = String.valueOf(resultSet.getObject(next));
-                resultList.add(record);
-            }
-            queryList.add(resultList);
-        }
-        return queryList;
-    }
-
-    /**
      * 获取当前数据库下面所有的数据库名字
      * @return
      * @throws SQLException
@@ -144,4 +115,90 @@ public class DataOperaterUtil {
         }
         return columnNameList;
     }
+
+    /**
+     * 获取表中的数据
+     * @param databaseName
+     * @param tableName
+     * @return 可以返回list list 也可以返回 list map类型的
+     * @throws SQLException
+     */
+    public List<List<String>> list(String databaseName, String tableName) throws SQLException {
+//        List<Map<String, String>> queryList = new ArrayList<>();
+        List<List<String>> queryList = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM ");
+        sql.append(StringUtils.trimAllWhitespace(tableName));
+        PreparedStatement preparedStatement = connection.prepareStatement(String.valueOf(sql));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<String> columnNames = getColumnNameByTableName(databaseName, tableName);
+        while (resultSet.next()) {
+//            Map<String, String> resultMap = new HashMap<>();
+            List<String> resultList = new LinkedList<>();
+            Iterator<String> iterator = columnNames.iterator();
+            while (iterator.hasNext()) {
+                //next是；列名
+                String next = iterator.next();
+                String record = String.valueOf(resultSet.getObject(next));
+                resultList.add(record);
+            }
+            queryList.add(resultList);
+        }
+        return queryList;
+    }
+
+    public List<String> listPrimaryKey(String databaseName, String tableName) throws SQLException{
+        //获取主键信息
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet primaryKeys = metaData.getPrimaryKeys(databaseName, null, tableName);
+        String pk_name = null;
+        if (primaryKeys.next()){
+            pk_name = String.valueOf(primaryKeys.getObject("COLUMN_NAME"));
+        }
+        StringBuilder sql = new StringBuilder("SELECT ");
+        sql.append(pk_name + " ");
+        sql.append("From ");
+        sql.append(StringUtils.trimAllWhitespace(tableName));
+        PreparedStatement preparedStatement = connection.prepareStatement(String.valueOf(sql));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<String> primaryList = new ArrayList<>();
+        while (resultSet.next()){
+            String primary = String.valueOf(resultSet.getObject(1));
+            primaryList.add(primary);
+        }
+        return primaryList;
+    }
+
+    public Integer remove(String databaseName, String tableName, String index) throws SQLException{
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet primaryKeys = metaData.getPrimaryKeys(databaseName, null, tableName);
+        String pk_name = null;
+        if (primaryKeys.next()){
+            pk_name = String.valueOf(primaryKeys.getObject("COLUMN_NAME"));
+        }
+        StringBuilder sql = new StringBuilder("DELETE FROM ");
+        sql.append(StringUtils.trimAllWhitespace(tableName) + " ");
+        sql.append("WHERE ");
+        sql.append(pk_name + "=" + index);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql.toString());
+        System.out.println(preparedStatement.toString());
+        int integer = preparedStatement.executeUpdate();
+        return integer;
+    }
+
+//    public Integer insert(String databaseName, String tableName, List<String> list) throws SQLException{
+//        StringBuilder sql = new StringBuilder("INSERT INTO ");
+//        sql.append(StringUtils.trimAllWhitespace(tableName) + " ");
+//
+//        return null;
+//    }
+
+//    public Integer update(String databaseName, String tableName, List<string>) throws SQLException {
+//        List<String> columnNames = getColumnNameByTableName(databaseName, tableName);
+//        StringBuilder sql = new StringBuilder("UPDATE ");
+//        sql.append(StringUtils.trimAllWhitespace(tableName) + " ");
+//        sql.append("SET ");
+//        sql.append()
+//
+//    }
+
 }

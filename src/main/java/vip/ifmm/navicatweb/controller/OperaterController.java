@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import vip.ifmm.navicatweb.entity.TableStructure;
 import vip.ifmm.navicatweb.util.DataOperaterUtil;
 
@@ -19,6 +20,12 @@ import java.util.Map;
  */
 @Controller
 public class OperaterController {
+    /**
+     * session 中
+     * selected 已选择的数据库
+     * tableName 已选择的表名
+     * util 操作工具类
+     */
 
     @RequestMapping(value = "/getTables")
     public String getTables(String databaseName, HttpSession session, Model model){
@@ -52,20 +59,38 @@ public class OperaterController {
     public String getDetailTable(String tableName, HttpSession session, Model model){
         DataOperaterUtil util = (DataOperaterUtil)session.getAttribute("util");
         String selectedDatabase = (String)session.getAttribute("selected");
+        session.setAttribute("tableName", tableName);
         List<String> columnProperty = null;
         List<String> tableList = null;
         List<List<String>> detailTableInfo = null;
+        List<String> primaryKeys = null;
         try {
             columnProperty = util.getColumnNameByTableName(selectedDatabase, tableName);
             tableList = util.queryTables(selectedDatabase);
             detailTableInfo = util.list(selectedDatabase, tableName);
+            primaryKeys = util.listPrimaryKey(selectedDatabase, tableName);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         model.addAttribute("columnProperty", columnProperty);
         model.addAttribute("tableList", tableList);
         model.addAttribute("detailTableInfo", detailTableInfo);
-        System.out.println(detailTableInfo.size());
+        model.addAttribute("primaryKeys", primaryKeys);
         return "database";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/remove")
+    public String remove(String index, HttpSession session, Model model){
+        DataOperaterUtil util = (DataOperaterUtil)session.getAttribute("util");
+        String selectedDatabase = (String)session.getAttribute("selected");
+        String tableName = (String)session.getAttribute("tableName");
+        Integer isRemove = null;
+        try {
+            isRemove = util.remove(selectedDatabase, tableName, index);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return String.valueOf(isRemove);
     }
 }

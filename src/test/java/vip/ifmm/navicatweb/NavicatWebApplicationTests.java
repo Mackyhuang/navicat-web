@@ -30,6 +30,13 @@ public class NavicatWebApplicationTests {
 //        while (iterator.hasNext()){
 //            System.out.println(iterator.next());
 //        }
+//        List<String> strings = dataOperaterUtil.listPrimaryKey("test", "province");
+//        Iterator<String> iterator = strings.iterator();
+//        while (iterator.hasNext()){
+//            System.out.println(iterator.next());
+//        }
+        Integer remove = dataOperaterUtil.remove("test", "province", "1");
+        System.out.println(remove);
     }
 
 }
