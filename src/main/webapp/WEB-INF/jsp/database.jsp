@@ -124,6 +124,7 @@
                                         <td>${line}</td>
                                     </c:forEach>
                                     <td>
+                                        <a href="#" class="update_btn" data-index-tag="${primaryKeys[loop.count-1]}">更新</a>
                                         <a href="#" class="delete_btn" data-index-tag="${primaryKeys[loop.count-1]}">删除</a>
                                     </td>
                                 </tr>
